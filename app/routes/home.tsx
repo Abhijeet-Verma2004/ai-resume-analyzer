@@ -14,12 +14,20 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const { auth } = usePuterStore();
+  const { auth, isLoading } = usePuterStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(!auth.isAuthenticated) navigate('/auth?next=/');
-  }, [auth.isAuthenticated])
+    if(!isLoading && !auth.isAuthenticated) navigate('/auth?next=/');
+  }, [auth.isAuthenticated, isLoading, navigate]);
+
+  if (isLoading) {
+    return (
+        <main className="flex justify-center items-center h-screen bg-[url('/images/bg-main.svg')] bg-cover">
+          <p className="text-lg">Loading your session...</p>
+        </main>
+    );
+  }
 
   return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
     <Navbar />
