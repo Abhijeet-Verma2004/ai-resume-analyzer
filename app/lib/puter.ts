@@ -56,12 +56,9 @@ interface PuterStore {
         getUser: () => PuterUser | null;
     };
     fs: {
-        write: (
-            path: string,
-            data: string | File | Blob
-        ) => Promise<File | undefined>;
+        write: (path: string, data: string | File | Blob) => Promise<File | undefined>;
         read: (path: string) => Promise<Blob | undefined>;
-        upload: (file: File[] | Blob[]) => Promise<FSItem | undefined>;
+        upload: (files: File[] | Blob[]) => Promise<FSItem | undefined>; // ✅ match global type
         delete: (path: string) => Promise<void>;
         readDir: (path: string) => Promise<FSItem[] | undefined>;
     };
@@ -292,14 +289,16 @@ export const usePuterStore = create<PuterStore>((set, get) => {
         return puter.fs.read(path);
     };
 
-    const upload = async (files: File[] | Blob[]) => {
+    const upload = async (files: (File | Blob)[]) => {
         const puter = getPuter();
         if (!puter) {
             setError("Puter.js not available");
             return;
         }
-        return puter.fs.upload(files);
+        const validFiles = files.filter((f): f is File | Blob => f !== null);
+        return puter.fs.upload(validFiles);
     };
+
 
     const deleteFile = async (path: string) => {
         const puter = getPuter();
@@ -350,7 +349,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
                     ],
                 },
             ],
-            { model: "claude-sonnet-4" }
+            { model: "claude-3-7-sonnet" }
         ) as Promise<AIResponse | undefined>;
     };
 
