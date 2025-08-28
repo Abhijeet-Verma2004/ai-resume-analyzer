@@ -18,8 +18,8 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(!isLoading && !auth.isAuthenticated) navigate('/auth?next=/');
-  }, [auth.isAuthenticated, isLoading, navigate]);
+    if(!auth.isAuthenticated) navigate('/auth?next=/');
+  }, [auth.isAuthenticated]);
 
   if (isLoading) {
     return (
